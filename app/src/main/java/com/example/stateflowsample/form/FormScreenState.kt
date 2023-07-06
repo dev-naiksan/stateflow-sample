@@ -7,7 +7,12 @@ import kotlinx.parcelize.Parcelize
 data class FormScreenState(
     val name: String = "",
     val phone: String = "",
+    val otp: String = "",
+    val otpFieldVisible: Boolean = false,
+    val otpTimerValueInSec: Int = 0,
     val loading: Boolean = false,
-    val nameError: String = "",
-    val phoneError: String = ""
+    val otpSendLoading: Boolean = false,
+    val nameError: String? = null,
+    val phoneError: String? = null,
+    val otpError: String? = null,
 ) : Parcelable

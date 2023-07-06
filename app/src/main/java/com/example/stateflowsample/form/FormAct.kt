@@ -12,6 +12,7 @@ import com.example.stateflowsample.launchWhenStartedRepeat
 import kotlinx.coroutines.flow.collectLatest
 
 private const val TAG = "FormAct"
+
 class FormAct : AppCompatActivity() {
     private val viewModel: FormViewModel by viewModels()
 
@@ -20,8 +21,6 @@ class FormAct : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActFormBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        Log.d(TAG, "onCreate: $savedInstanceState")
 
         binding.submitBtn.setOnClickListener {
             viewModel.submit()
@@ -32,6 +31,12 @@ class FormAct : AppCompatActivity() {
         binding.nameEt.doOnTextChanged { text, _, _, _ ->
             viewModel.onNameChange(text?.toString().orEmpty().trim())
         }
+        binding.otpEt.doOnTextChanged { text, _, _, _ ->
+            viewModel.onOtpChange(text?.toString().orEmpty().trim())
+        }
+        binding.resendBtn.setOnClickListener {
+            viewModel.sendOtp()
+        }
         binding.toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
         launchWhenStartedRepeat {
@@ -39,14 +44,20 @@ class FormAct : AppCompatActivity() {
                 binding.apply {
                     nameTil.error = state.nameError
                     phoneTil.error = state.phoneError
+                    otpTil.error = state.otpError
                     progressBar.isVisible = state.loading
                     submitBtn.isVisible = !state.loading
+                    resendBtn.isVisible = state.otpFieldVisible && state.otpTimerValueInSec == 0
+                    otpTil.isVisible = state.otpFieldVisible
+                    resendOtpTimer.isVisible =
+                        state.otpFieldVisible && state.otpTimerValueInSec != 0
+                    resendOtpTimer.text = "Resend OTP in ${state.otpTimerValueInSec}s"
                 }
             }
         }
 
         launchWhenStartedRepeat {
-            viewModel.actionResultStateFlow.collectLatest { action ->
+            viewModel.actionResultSharedFlow.collectLatest { action ->
                 when (action) {
                     FormActionResult.Success -> onBackPressedDispatcher.onBackPressed()
                     is FormActionResult.Failure -> Toast.makeText(

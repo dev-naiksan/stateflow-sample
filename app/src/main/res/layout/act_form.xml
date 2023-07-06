@@ -48,8 +48,47 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/phoneEt"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:maxLength="10"
+            android:inputType="number" />
     </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/otpTil"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:hint="Enter otp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/phoneTil">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/otpEt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLength="4"
+            android:inputType="number" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/resendOtpTimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:text="Resend OTP in 00:00"
+        app:layout_constraintStart_toStartOf="@id/otpTil"
+        app:layout_constraintTop_toBottomOf="@id/otpTil" />
+
+    <TextView
+        android:id="@+id/resendBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:text="Resend"
+        app:layout_constraintEnd_toEndOf="@id/otpTil"
+        app:layout_constraintTop_toBottomOf="@id/otpTil" />
 
     <ProgressBar
         android:id="@+id/progressBar"
