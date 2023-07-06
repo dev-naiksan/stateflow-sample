@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.stateflowsample.DataService
 import com.example.stateflowsample.ServiceResult
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -16,8 +18,8 @@ class FormViewModel : ViewModel() {
     private val _state = MutableStateFlow(FormScreenState())
     val state: StateFlow<FormScreenState> = _state.asStateFlow()
 
-    private val _actionStateFlow = MutableStateFlow<FormActionResult>(FormActionResult.Initial)
-    val actionResultStateFlow = _actionStateFlow.asStateFlow()
+    private val _actionSharedFlow = MutableSharedFlow<FormActionResult>(replay = 0)
+    val actionResultStateFlow: SharedFlow<FormActionResult> = _actionSharedFlow
 
     fun submit() {
         if (_state.value.name.isEmpty()) {
@@ -31,7 +33,7 @@ class FormViewModel : ViewModel() {
         }
 
         viewModelScope.launch {
-            _actionStateFlow.value = FormActionResult.Initial
+            _actionSharedFlow.emit(FormActionResult.Initial)
             _state.value = _state.value.copy(loading = true, nameError = "", phoneError = "")
             when (val result = DataService.submitForm()) {
                 is ServiceResult.Failure -> {
@@ -42,12 +44,12 @@ class FormViewModel : ViewModel() {
                         )
                     } else {
                         _state.value = _state.value.copy(loading = false)
-                        _actionStateFlow.value = FormActionResult.Failure(result.message)
+                        _actionSharedFlow.emit(FormActionResult.Failure(result.message))
                     }
                 }
 
                 is ServiceResult.Success -> {
-                    _actionStateFlow.value = FormActionResult.Success
+                    _actionSharedFlow.emit(FormActionResult.Success)
                 }
             }
         }
