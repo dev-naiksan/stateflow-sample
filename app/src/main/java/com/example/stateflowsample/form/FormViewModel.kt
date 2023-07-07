@@ -2,21 +2,14 @@ package com.example.stateflowsample.form
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.stateflowsample.CoroutineTimer
 import com.example.stateflowsample.DataService
 import com.example.stateflowsample.ServiceResult
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.conflate
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
 private const val TAG = "FormlViewModel"
@@ -32,7 +25,7 @@ class FormViewModel : ViewModel() {
     private val _actionSharedFlow = MutableSharedFlow<FormActionResult>(replay = 0)
     val actionResultSharedFlow: SharedFlow<FormActionResult> = _actionSharedFlow
 
-    private var job: Job? = null
+    private val timer = CoroutineTimer(scope = viewModelScope, duration = ResendOtpDelayInSec)
 
     fun submit() {
         if (_state.value.name.isEmpty()) {
@@ -94,23 +87,10 @@ class FormViewModel : ViewModel() {
     }
 
     private fun startTimer() {
-        job?.cancel()
-        job = null
-        job = viewModelScope.launch {
-            (ResendOtpDelayInSec downTo 0)
-                .asFlow()
-                .onEach { delay(1000) }
-                .onStart { emit(ResendOtpDelayInSec) }
-                .conflate()
-                .onCompletion {
-                    job?.cancel()
-                    job = null
-                }
-                .collectLatest { seconds ->
-                    _state.value = state.value.copy(
-                        otpTimerValueInSec = seconds,
-                    )
-                }
+        timer.start { seconds ->
+            _state.value = state.value.copy(
+                otpTimerValueInSec = seconds,
+            )
         }
     }
 
