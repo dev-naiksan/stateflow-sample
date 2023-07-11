@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.stateflowsample.CoroutineTimer
 import com.example.stateflowsample.DataService
+import com.example.stateflowsample.ResendOtpDelayInSec
 import com.example.stateflowsample.ServiceResult
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,10 +16,6 @@ import kotlinx.coroutines.launch
 private const val TAG = "FormlViewModel"
 
 class FormViewModel : ViewModel() {
-    companion object {
-        const val ResendOtpDelayInSec = 60
-    }
-
     private val _state = MutableStateFlow(FormScreenState())
     val state: StateFlow<FormScreenState> = _state.asStateFlow()
 

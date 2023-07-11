@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
 class CoroutineTimer(private val scope: CoroutineScope, private val duration: Int) {
@@ -16,6 +17,7 @@ class CoroutineTimer(private val scope: CoroutineScope, private val duration: In
         job = scope.launch {
             (duration downTo 0)
                 .asFlow()
+                .onStart { emit(duration) }
                 .onEach { delay(1000) }
                 .conflate()
                 .collectLatest { seconds ->

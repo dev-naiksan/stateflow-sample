@@ -1,6 +1,7 @@
 package com.example.stateflowsample.form
 
 import android.os.Parcelable
+import com.example.stateflowsample.ResendOtpDelayInSec
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -9,7 +10,7 @@ data class FormScreenState(
     val phone: String = "",
     val otp: String = "",
     val otpFieldVisible: Boolean = false,
-    val otpTimerValueInSec: Int = 0,
+    val otpTimerValueInSec: Int = ResendOtpDelayInSec,
     val loading: Boolean = false,
     val otpSendLoading: Boolean = false,
     val nameError: String? = null,

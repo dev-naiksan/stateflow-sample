@@ -2,6 +2,7 @@ package com.example.stateflowsample.form
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -25,15 +26,12 @@ class FormAct : AppCompatActivity() {
         binding.submitBtn.setOnClickListener {
             viewModel.submit()
         }
-        binding.phoneEt.doOnTextChanged { text, _, _, _ ->
-            viewModel.onPhoneChange(text?.toString().orEmpty().trim())
-        }
-        binding.nameEt.doOnTextChanged { text, _, _, _ ->
-            viewModel.onNameChange(text?.toString().orEmpty().trim())
-        }
-        binding.otpEt.doOnTextChanged { text, _, _, _ ->
-            viewModel.onOtpChange(text?.toString().orEmpty().trim())
-        }
+        binding.phoneEt.onTextChange(viewModel::onPhoneChange)
+
+        binding.nameEt.onTextChange(viewModel::onNameChange)
+
+        binding.otpEt.onTextChange(viewModel::onOtpChange)
+
         binding.resendBtn.setOnClickListener {
             viewModel.sendOtp()
         }
@@ -70,5 +68,11 @@ class FormAct : AppCompatActivity() {
                 }
             }
         }
+    }
+}
+
+inline fun EditText.onTextChange(crossinline action: (text: String) -> Unit) {
+    doOnTextChanged { text, _, _, _ ->
+        action(text?.toString().orEmpty())
     }
 }
